@@ -1,0 +1,28 @@
+#!/bin/python
+import datetime
+import subprocess
+import sys
+import os
+
+if len(sys.argv) < 3:
+    print("Usage: {0} timezone subcommand [args]".format(sys.argv[0]), file=sys.stderr)
+    exit(1)
+
+ti = datetime.datetime.strptime(sys.argv[1], "%z").tzinfo
+ds = datetime.datetime.now(tz=ti).strftime("%a %b %d %H:%M:%S %z %Y")
+env = dict(GIT_AUTHOR_DATE=ds, GIT_COMMITTER_DATE=ds)
+
+for d in os.environ["PATH"].split(":"):
+    f = os.path.join(d, "git")
+    if os.path.exists(f):
+        ex = (f, *sys.argv[2:])
+        break
+else:
+    print("Error: git not found in PATH", file=sys.stderr)
+    exit(1)
+
+a = sys.argv[1:]
+if "--date" in a:
+    a.insert(a.index("--date") + 1, ds)
+
+exit(subprocess.run(ex, stdout=subprocess.PIPE, stdin=subprocess.PIPE, env=env).returncode)
