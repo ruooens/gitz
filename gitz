@@ -25,4 +25,4 @@ a = sys.argv[1:]
 if "--date" in a:
     a.insert(a.index("--date") + 1, ds)
 
-exit(subprocess.run(ex, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE, env=env).returncode)
+exit(subprocess.run(ex, stdout=sys.stdout, stderr=sys.stderr, stdin=sys.stdin, env=env).returncode)
